@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+############## SET PARAMS ##############
+############## SET PARAMS ##############
+
 # load libs and funs
 source(here::here("scripts/funs-libs.R"))
 
@@ -10,7 +13,7 @@ option_list <- list(
     )
 
 # set args
-opt <- parse_args(OptionParser(option_list=option_list))
+opt <- parse_args(OptionParser(option_list=option_list,add_help_option=FALSE))
 
 # make paths
 proj.path <- here("temp/processing",paste0(opt$primer,"-",opt$lib))
@@ -24,6 +27,9 @@ writeLines(paste0("\n...\nOutput directory set to:\n",proj.path,"\n"))
 trucVal <- c(105,105)
 
 
+############## QUALITY TRIM TRUNCATE ##############
+############## QUALITY TRIM TRUNCATE ##############
+
 # report
 writeLines("\n...\nQuality trimming and truncating\n")
 Sys.sleep(3)
@@ -32,6 +38,9 @@ Sys.sleep(3)
 filterAndTrim(fwd=cpath("sense","trimmed","R1"), filt=cpath("sense","filtered","R1"), rev=cpath("sense","trimmed","R2"), filt.rev=cpath("sense","filtered","R2"), maxN=0, maxEE=c(2,2), truncQ=2, rm.phix=TRUE, truncLen=trucVal, multithread=TRUE, verbose=TRUE, matchIDs=TRUE)
 filterAndTrim(fwd=cpath("antisense","trimmed","R1"), filt=cpath("antisense","filtered","R1"), rev=cpath("antisense","trimmed","R2"), filt.rev=cpath("antisense","filtered","R2"), maxN=0, maxEE=c(2,2), truncQ=2, rm.phix=TRUE, truncLen=trucVal, multithread=TRUE, verbose=TRUE, matchIDs=TRUE)
 
+
+############## LEARN ERRORS ##############
+############## LEARN ERRORS ##############
 
 # report
 writeLines("\n...\nLearning errors\n")
@@ -47,12 +56,9 @@ antisense.filt.R1.errs <- learnErrors(cpath("antisense","filtered","R1"), multit
 set.seed(42)
 antisense.filt.R2.errs <- learnErrors(cpath("antisense","filtered","R2"), multithread=TRUE, randomize=TRUE, nbases=1e+08, verbose=TRUE)
 
-# plot the errors
-#plotErrors(dq=sense.filt.R1.errs, nominalQ=TRUE)
-#plotErrors(dq=sense.filt.R2.errs, nominalQ=TRUE)
-#plotErrors(dq=antisense.filt.R1.errs, nominalQ=TRUE)
-#plotErrors(dq=antisense.filt.R2.errs, nominalQ=TRUE)
 
+############## MAKE PRIORS ##############
+############## MAKE PRIORS ##############
 
 # make some fish priors
 if(opt$primer=="tele02") {
@@ -62,8 +68,6 @@ if(opt$primer=="tele02") {
 } else {
     stop("Primers must be 'tele02', 'elas02', 'mifish-u', or 'mifish-u-mod'")
 }
-#writeLines(prefix)
-
 
 # load reflib - first need to have run 'join-references.R' to create
 reflib <- suppressMessages(suppressWarnings(read_csv(here("temp/reference-library/custom-refs.csv"),guess_max=99999,col_types=cols())))
@@ -79,6 +83,10 @@ reflib.sub <- subset_by_marker(prefix=prefix,df=reflib,thresh=0.625) %>%
 # pull out the priors
 fish.priors <- unique(c(pull(reflib.sub,fwd),pull(reflib.sub,revcomp)))
 
+
+############## DENOISE ##############
+############## DENOISE ##############
+
 # report
 writeLines("\n...\ndada2 denoising\n")
 Sys.sleep(3)
@@ -89,11 +97,9 @@ sense.filt.R2.dada <- dada(cpath("sense","filtered","R2"), err=sense.filt.R2.err
 antisense.filt.R1.dada <- dada(cpath("antisense","filtered","R1"), err=antisense.filt.R1.errs, multithread=TRUE, pool=TRUE, priors=fish.priors)
 antisense.filt.R2.dada <- dada(cpath("antisense","filtered","R2"), err=antisense.filt.R2.errs, multithread=TRUE, pool=TRUE, priors=fish.priors)
 
-# look at dada objects
-#sense.filt.R1.dada[[1]]
-#sense.filt.R2.dada[[1]]
-#antisense.filt.R1.dada[[1]]
-#antisense.filt.R2.dada[[1]]
+
+############## DEREPLICATE ##############
+############## DEREPLICATE ##############
 
 # report
 writeLines("\n...\nDereplication\n")
@@ -106,6 +112,9 @@ antisense.filt.R1.derep <- derepFastq(cpath("antisense","filtered","R1"))
 antisense.filt.R2.derep <- derepFastq(cpath("antisense","filtered","R2"))
 
 
+############## MERGE ##############
+############## MERGE ##############
+
 # report
 writeLines("\n...\nRead merging\n")
 Sys.sleep(3)
@@ -114,14 +123,9 @@ Sys.sleep(3)
 sense.merged <- mergePairs(dadaF=sense.filt.R1.dada, derepF=sense.filt.R1.derep, dadaR=sense.filt.R2.dada, derepR=sense.filt.R2.derep, verbose=TRUE, maxMismatch=0)
 antisense.merged <- mergePairs(dadaF=antisense.filt.R1.dada, derepF=antisense.filt.R1.derep, dadaR=antisense.filt.R2.dada,  derepR=antisense.filt.R2.derep, verbose=TRUE, maxMismatch=0)
 
-#head(sense.merged[[1]])
-#head(antisense.merged[[1]])
-
 # make an OTU table
 sense.seqtab <- makeSequenceTable(sense.merged)
 antisense.seqtab <- makeSequenceTable(antisense.merged)
-#dim(sense.seqtab)
-#dim(antisense.seqtab)
 
 # reverse comp the antisense
 colnames(antisense.seqtab) <- dada2::rc(colnames(antisense.seqtab))
@@ -132,8 +136,10 @@ rownames(antisense.seqtab) <- str_split_fixed(rownames(antisense.seqtab),"\\.",4
 
 # merge the tables
 merged.seqtab <- mergeSequenceTables(table1=sense.seqtab, table2=antisense.seqtab, repeats="sum")
-#dim(merged.seqtab)
 
+
+############## REMOVE CHIMAERAS ##############
+############## REMOVE CHIMAERAS ##############
 
 # report
 writeLines("\n...\nDetecting chimaeras\n")
@@ -141,22 +147,14 @@ Sys.sleep(3)
 
 # remove chimaeras
 merged.seqtab.nochim <- removeBimeraDenovo(merged.seqtab, method="consensus", multithread=TRUE, verbose=TRUE)
-#dim(merged.seqtab.nochim)
+
+
+############## SAVE FILES ##############
+############## SAVE FILES ##############
 
 # report
-writeLines("\n...\nSaving output files\n")
+writeLines("\n...\nSaving raw ASV files\n")
 Sys.sleep(3)
-
-# stats to copy into 'logs/stats.csv'
-# remember to run 'after filter' line in demultiplex.sh
-#table(nchar(getSequences(merged.seqtab.nochim)))
-#sum(merged.seqtab)# merge
-#sum(merged.seqtab.nochim)# chim
-#sum(merged.seqtab.nochim)/sum(merged.seqtab)
-
-# get stats
-stats <- paste0("merge,",sum(merged.seqtab),"\n","chim,",sum(merged.seqtab.nochim))
-writeLines(stats,paste0(proj.path,"/logs/dada-stats.csv"))
 
 # make df and fasta for IDs
 otus.df <- tibble(names=paste0(opt$primer,"-",opt$lib,"-","asv",str_pad(seq_along(colnames(merged.seqtab.nochim)),width=4,side="left",pad="0")), dnas=colnames(merged.seqtab.nochim)) %>% mutate(len=str_length(dnas))
@@ -168,6 +166,64 @@ write.FASTA(tab2fas(df=otus.df, seqcol="dnas", namecol="names"), file=paste0(pro
 colnames(merged.seqtab.nochim) <- paste0(opt$primer,"-",opt$lib,"-","asv",str_pad(seq_along(colnames(merged.seqtab.nochim)),width=4,side="left",pad="0"))
 write_tsv(as_tibble(t(merged.seqtab.nochim), rownames="asv"), file=paste0(proj.path,"/results/asv-table.tsv"))
 
-writeLines("\n...\nDone\n")
+# report
 writeLines(paste0("\n...\nASVs written to:\n",paste0(proj.path,"/results/asvs.fna"),"\n"))
 writeLines(paste0("\n...\nASV table written to:\n",paste0(proj.path,"/results/asv-table.tsv"),"\n"))
+
+
+############## CLEAN ASVs WITH HMMs ##############
+############## CLEAN ASVs WITH HMMs ##############
+
+# report
+writeLines("\n...\nCleaning ASVs\n")
+Sys.sleep(3)
+
+# get correct hmm
+if(opt$primer=="tele02") {
+    hmm <- here("assets/12s.taberlet.noprimers.hmm")
+} else if(opt$primer=="elas02" | opt$primer=="mifish-u" | opt$primer=="mifish-u-mod") {
+    hmm <- here("assets/12s.miya.noprimers.hmm")
+} else {
+    stop("Primers must be 'tele02', 'elas02', 'mifish-u', or 'mifish-u-mod'")
+}
+
+# set vars
+infile <- paste0(proj.path,"/results/asvs.fna")
+outfile <- paste0(proj.path,"/results/hmm.out")
+cleanfile <- paste0(proj.path,"/results/asvs-clean.fasta")
+
+# run hmm clean
+string.hmmer <- paste0("hmmsearch -E 0.01 --incE 0.01 ",hmm," ",infile," | grep '>>' | sed -e 's/>> //g' -e 's/[[:space:]]//g' -e 's/$/$/' | sort | uniq"," > ",outfile)
+system(command=string.hmmer,ignore.stdout=FALSE)
+
+# run the grep clean 
+string.grep <- paste0("grep -A 1 -f ",outfile," ",infile," | grep -v '^-' > ",cleanfile)
+system(command=string.grep,ignore.stdout=FALSE)
+
+
+# read asv table back in written table to get format correct
+otu.tab <- as_tibble(read.table(file=paste0(proj.path,"/results/asv-table.tsv"), sep="\t", header=TRUE, as.is=TRUE, row.names=1, check.names=FALSE), rownames="asv")
+dnas.curated <- read.FASTA(file=paste0(proj.path,"/results/asvs.fna"))
+
+# load up data cleaned by the HMM
+dnas.curated.clean <- read.FASTA(file=paste0(proj.path,"/results/asvs-clean.fasta"))
+dnas.curated.dirty <- dnas.curated[which(!(names(dnas.curated) %in% names(dnas.curated.clean)))]
+write.FASTA(dnas.curated.dirty, file=paste0(proj.path,"/results/asvs-dirty.fasta"))
+
+# subset the clean sequences from the ASV table
+otu.tab.clean <- otu.tab %>% filter(asv %in% names(dnas.curated.clean))
+# write out
+write_tsv(otu.tab.clean,file=paste0(proj.path,"/results/asv-table-clean.tsv"))
+
+# get numbers of seqs lost during hmm search
+total <- otu.tab %>% summarise_if(is.numeric, sum, na.rm=TRUE) %>% rowSums()
+lost <- otu.tab %>% filter(!asv %in% names(dnas.curated.clean)) %>% summarise_if(is.numeric, sum, na.rm=TRUE) %>% rowSums()
+retained <- otu.tab.clean %>% summarise_if(is.numeric, sum, na.rm=TRUE) %>% rowSums()
+
+# report
+writeLines(paste0("\n...\nCleaned ASVs written to:\n",paste0(proj.path,"/results/asvs-clean.fasta"),"\n"))
+writeLines(paste0("\n...\nCleaned ASV table written to:\n",paste0(proj.path,"/results/asv-table-clean.tsv"),"\n"))
+
+# write stats
+stats <- paste0("merge,",sum(merged.seqtab),"\n","chim,",sum(merged.seqtab.nochim),"\n","homol,",retained)
+writeLines(stats,paste0(proj.path,"/logs/dada-stats.csv"))
