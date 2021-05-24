@@ -11,7 +11,7 @@ option_list <- list(
     make_option(c("-r","--lenrev"), type="numeric")
     )
 # set args
-opt <- parse_args(OptionParser(option_list=option_list))
+opt <- parse_args(OptionParser(option_list=option_list,add_help_option=FALSE))
 
 
 # make paths
