@@ -12,7 +12,7 @@ done
 
 
 # make temp and results dirs
-mkdir -p results temp
+mkdir -p results temp/taxonomic-assignment
 
 # report R libs
 Rscript scripts/get-r-libs.R
@@ -23,6 +23,7 @@ Rscript scripts/get-r-libs.R
 { printf "\ngappa --version\n" & gappa --version; } >> temp/sessionInfo.txt
 { printf "\nepa-ng --version\n" & epa-ng --version; } >> temp/sessionInfo.txt
 { printf "\nraxml-ng --version\n" & raxml-ng --version | grep "RAxML-NG"; } >> temp/sessionInfo.txt
+#{ printf "\nmafft --version\n" & mafft --version; } >> temp/sessionInfo.txt
 { printf "\nhmmsearch -h\n" & hmmsearch -h | grep "HMMER"; } >> temp/sessionInfo.txt
 { printf "\nblastn -version\n" & blastn -version | grep -v "Package"; } >> temp/sessionInfo.txt
 #{ printf "\nvsearch --version\n" & vsearch --version | grep "linux"; } >> temp/sessionInfo.txt
