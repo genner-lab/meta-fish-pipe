@@ -70,7 +70,7 @@ if(opt$primer=="tele02") {
 }
 
 # load reflib - first need to have run 'join-references.R' to create
-reflib <- suppressMessages(suppressWarnings(read_csv(here("temp/reference-library/custom-refs.csv"),guess_max=99999,col_types=cols())))
+reflib <- suppressMessages(suppressWarnings(read_csv(here("assets/custom-reference-library.csv"),guess_max=99999,col_types=cols())))
 
 # subset the marker from the reflib and rev comp and trim
 reflib.sub <- subset_by_marker(prefix=prefix,df=reflib,thresh=0.625) %>% 
