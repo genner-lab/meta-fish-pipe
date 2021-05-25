@@ -25,7 +25,6 @@ scripts/demultiplex.sh -p tele02 -l lib3 -f AAACTCGTGCCAGCCACC -r GGGTATCTAATCCC
 scripts/dada2.R -p tele02 -l lib3
 
 
-
 ### FOR LIB4
 
 # prep
@@ -53,9 +52,22 @@ scripts/dada2.R -p tele02 -l lib4
 ############## ALL LIBS - TAXONOMIC ASSIGNMENT ##############
 ############## ALL LIBS - TAXONOMIC ASSIGNMENT ##############
 
+# run taxonomic assignment
+scripts/taxonomic-assignment.sh -t 8 -p tele02
 
-scripts/taxonomic-assignment.sh
 
+
+
+
+
+
+
+
+#### SUBSET THE CUSTOM REFS
+source(here::here("scripts/funs-libs.R"))
+ref.lib <- read_csv(here("assets/custom-reference-library.csv"),guess_max=99999,col_types=cols())
+ref.lib.filt <- ref.lib %>% filter(!is.na(nucleotidesFrag.12s.taberlet.noprimers))
+write.FASTA(tab2fas(df=ref.lib.filt,seqcol="nucleotidesFrag.12s.taberlet.noprimers",namecol="dbid"),file=here("assets/custom-reference-library.fasta"))
 
 
 
@@ -69,15 +81,6 @@ cutadapt -n 1 -e 0.3 -O 10 -g AAACTCGTGCCAGCCACC temp/reference-library/refseq-a
 vsearch --derep_fulllength temp/reference-library/refseq-annotated-trimmed.fasta --minuniquesize 1 --fasta_width 0 --output temp/reference-library/refseq-annotated-trimmed-derep.fasta
 
 vsearch --threads 8 --sintax temp/reference-library/asvs-clean-cat-relabel-derep.fasta --db temp/reference-library/refseq-annotated.fasta --sintax_cutoff 0.7 --tabbedout temp/reference-library/sintax-output.tsv
-
-
-
-
-
-
-
-
-
 
 
 renv::install("Matrix@1.3-2")
