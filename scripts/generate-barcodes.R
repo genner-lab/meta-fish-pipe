@@ -13,9 +13,16 @@ option_list <- list(
 # set args
 opt <- parse_args(OptionParser(option_list=option_list,add_help_option=FALSE))
 
+# for testing
+#opt <- NULL
+#opt$primer <- "tele02"
+#opt$lib <- "lib3"
+#opt$lenfwd <- 18
+#opt$lenrev <- 20
 
 # make paths
 proj.path <- here("temp/processing",paste0(opt$primer,"-",opt$lib))
+
 # confirm proj path 
 writeLines(paste0("\nOutput directory set to:\n",proj.path))
 
@@ -70,5 +77,8 @@ bcR <- tab2fas(df=plates, seqcol="barcodesRev", namecol="hashLabel")
 # write out in folder for running analyses
 write.FASTA(bcF, file=here(proj.path,"barcodes-sense.fas"))
 write.FASTA(bcR, file=here(proj.path,"barcodes-antisense.fas"))
+
+# write out table
+plates %>% select(primerSet,library,eventID,hashLabel) %>% write_csv(file=here(proj.path,"results/events-hashes.csv"))
 
 writeLines(paste0("\nDone. Sample barcodes written to ",proj.path))
