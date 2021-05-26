@@ -44,3 +44,4 @@ results
 assets/custom-reference-library.csv
 assets/custom-reference-library.fasta
 assets/refseq-annotated.fasta
+assets/contaminants-exclude.csv
