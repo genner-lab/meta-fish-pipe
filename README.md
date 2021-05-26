@@ -55,7 +55,8 @@ scripts/dada2.R -p tele02 -l lib4
 # run taxonomic assignment
 scripts/taxonomic-assignment.sh -t 8 -p tele02
 
-
+# assemble results
+scripts/assemble-results.R
 
 
 
