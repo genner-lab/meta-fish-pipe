@@ -90,7 +90,7 @@ scripts/split.R
 raxml-ng --msa temp/taxonomic-assignment/epa/epa.references.fasta --model TN93+G --parse
 
 # run a tree search
-raxml-ng --msa temp/taxonomic-assignment/epa/epa.references.fasta.raxml.rba --tree pars{1} --search --seed 42 --threads "$THREADS"
+raxml-ng --msa temp/taxonomic-assignment/epa/epa.references.fasta.raxml.rba --tree pars{1} --search --seed 42 --threads 1
 
 # optimise params
 raxml-ng --msa temp/taxonomic-assignment/epa/epa.references.fasta.raxml.rba --evaluate --tree temp/taxonomic-assignment/epa/epa.references.fasta.raxml.rba.raxml.bestTree --prefix temp/taxonomic-assignment/epa/opt
