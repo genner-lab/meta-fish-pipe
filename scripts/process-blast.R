@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+# report
+writeLines("\nProcessing BLAST results ...\n")
+
 # load libs and funs
 source(here::here("scripts/funs-libs.R"))
 
@@ -24,4 +27,4 @@ local.db.blast.sorted <- local.db.blast %>%
 # write out for later 
 local.db.blast.sorted %>% write_csv(here("temp/taxonomic-assignment/fish-blast-result-sorted.csv"))
 
-writeLines("\n...\nBlast results processed\n")
+writeLines("\n...\nBLAST results processed\n")

@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+# report
+writeLines("\nExtracting fish sequences ...\n")
+
 # load libs and funs
 source(here::here("scripts/funs-libs.R"))
 

@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+# report
+writeLines("\nPreparing sequences for EPA ...\n")
+
 # load libs and funs
 source(here::here("scripts/funs-libs.R"))
 

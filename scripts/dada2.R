@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+# report
+writeLines("\nRunning dada2 denoising ...\n")
+
 ############## SET PARAMS ##############
 ############## SET PARAMS ##############
 
@@ -221,8 +224,8 @@ lost <- otu.tab %>% filter(!asv %in% names(dnas.curated.clean)) %>% summarise_if
 retained <- otu.tab.clean %>% summarise_if(is.numeric, sum, na.rm=TRUE) %>% rowSums()
 
 # report
-writeLines(paste0("\n...\nCleaned ASVs written to:\n",paste0(proj.path,"/results/asvs-clean.fasta"),"\n"))
-writeLines(paste0("\n...\nCleaned ASV table written to:\n",paste0(proj.path,"/results/asv-table-clean.tsv"),"\n"))
+writeLines(paste0("\n...\nCleaned ASVs written to: '",paste0("temp/processing/",opt$primer,"-",opt$lib,"/results/asvs-clean.fasta'")))
+writeLines(paste0("\n...\nCleaned ASV table written to: '",paste0("temp/processing/",opt$primer,"-",opt$lib,"/results/asv-table-clean.tsv'")))
 
 # write stats
 stats <- paste0("merge,",sum(merged.seqtab),"\n","chim,",sum(merged.seqtab.nochim),"\n","homol,",retained)

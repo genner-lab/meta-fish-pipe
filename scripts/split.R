@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+# report
+writeLines("\nSplitting alignment ...\n")
+
 # load libs and funs
 source(here::here("scripts/funs-libs.R"))
 
@@ -20,4 +23,4 @@ write.FASTA(mafft.alignment.queries,file=here("temp/taxonomic-assignment/epa/epa
 write.FASTA(mafft.alignment.refs,file=here("temp/taxonomic-assignment/epa/epa.references.fasta"))
 
 # report
-writeLines("\n...\nDNA split and formatted\n")
+writeLines("\n...\nAlignment split and formatted\n")

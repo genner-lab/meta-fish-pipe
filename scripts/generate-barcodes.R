@@ -30,9 +30,9 @@ proj.path <- here("temp/processing",paste0(opt$primer,"-",opt$lib))
 plates <- suppressMessages(suppressWarnings(read_csv(file=here("assets/sequencing-master.csv"))))
 
 # check samples are all present in events-master - missing ones are blanks/ntc
-events.master <- suppressMessages(suppressWarnings(read_csv(file=here("assets/events-master.csv"))))
-writeLines("\nSample IDs not present in events table (should all be blanks):")
-plates %>% filter(!eventID %in% pull(events.master,eventID)) %>% distinct(eventID) %>% pull(eventID)
+#events.master <- suppressMessages(suppressWarnings(read_csv(file=here("assets/events-master.csv"))))
+#writeLines("\nSample IDs not present in events table (should all be blanks):")
+#plates %>% filter(!eventID %in% pull(events.master,eventID)) %>% distinct(eventID) %>% pull(eventID)
 
 # filter by marker
 plates %<>% filter(primerSet==opt$primer & library==opt$lib)
