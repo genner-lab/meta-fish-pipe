@@ -152,6 +152,28 @@ blanks.all <- bind_rows(blanks.with.fishes,events.df.blanks) %>%
 blanks.all %>% write_csv(file=here("results/controls-summary.csv"))
 
 
+############## SUMMARISE STATS ##############
+############## SUMMARISE STATS ##############
+
+# load stats files
+stats.list <- suppressMessages(suppressWarnings(lapply(here(libs.dirs,"logs/stats.csv"),read_csv)))
+
+# merge
+stats.merged <- bind_rows(stats.list)
+
+# add assigned
+assigned.sum <- fishes.by.sample %>% 
+    mutate(library=paste(primerSet,library,sep="-")) %>% 
+    group_by(library) %>% 
+    summarise(nreads=sum(nReads),.groups="drop") %>% 
+    mutate(stat="assigned")
+
+# join and sort and write out
+bind_rows(stats.merged,assigned.sum) %>% 
+    arrange(library,desc(nreads)) %>% 
+    write_csv(file=here("results/stats-summary.csv"))
+
+
 ############## REPORT ##############
 ############## REPORT ##############
 
@@ -159,3 +181,4 @@ blanks.all %>% write_csv(file=here("results/controls-summary.csv"))
 writeLines("\n...\nAssigned fish reads by sample written to: 'results/fishes-by-sample.csv'\n")
 writeLines("\n...\nTaxonomic assignments by ASV written to: 'results/taxonomic-assignments.csv'\n")
 writeLines("\n...\nSummary of negative controls written to: 'results/controls-summary.csv'\n")
+writeLines("\n...\nSummary of library stats written to: 'results/stats-summary.csv'\n")
