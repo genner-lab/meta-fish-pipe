@@ -79,6 +79,7 @@ rm -r results temp
 
 - documentation
 - repo for reflibs
+- update all the software and test
 
 
 # grep a function
