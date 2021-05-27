@@ -111,7 +111,6 @@ rm temp/taxonomic-assignment/epa/*raxml*
 # process results
 scripts/process-epa.R
 
-
-############## COMBINE TAXONOMIC ASSIGNMENT RESULTS ##############
-############## COMBINE TAXONOMIC ASSIGNMENT RESULTS ##############
-
+# report
+sleep 3
+printf "...\nTaxonomy assignments completed\n"
