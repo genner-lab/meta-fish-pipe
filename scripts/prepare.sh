@@ -27,7 +27,7 @@ Rscript scripts/get-r-libs.R
 { printf "\nraxml-ng --version\n" & raxml-ng --version | grep "RAxML-NG"; } >> temp/sessionInfo.txt
 { printf "\nepa-ng --version\n" & epa-ng --version; } >> temp/sessionInfo.txt
 { printf "\ngappa --version\n" & gappa --version; } >> temp/sessionInfo.txt
-{ printf "\nseqkit -v\n" & seqkit version | grep '^seqkit'; } >> temp/sessionInfo.txt
+{ printf "\nseqkit version\n" & seqkit version | grep '^seqkit'; } >> temp/sessionInfo.txt
 
 # copy to results
 cp temp/sessionInfo.txt results/sessionInfo.txt
