@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+# report
+writeLines("\nGenerating sample barcodes ...\n")
+
 # load libs funs
 source(here::here("scripts/funs-libs.R"))
 
@@ -22,9 +25,6 @@ opt <- parse_args(OptionParser(option_list=option_list,add_help_option=FALSE))
 
 # make paths
 proj.path <- here("temp/processing",paste0(opt$primer,"-",opt$lib))
-
-# confirm proj path 
-writeLines(paste0("\nOutput directory set to:\n",proj.path))
 
 # load up the data
 plates <- suppressMessages(suppressWarnings(read_csv(file=here("assets/sequencing-master.csv"))))
@@ -79,6 +79,7 @@ write.FASTA(bcF, file=here(proj.path,"barcodes-sense.fas"))
 write.FASTA(bcR, file=here(proj.path,"barcodes-antisense.fas"))
 
 # write out table
-plates %>% select(primerSet,library,eventID,hashLabel) %>% write_csv(file=here(proj.path,"results/events-hashes.csv"))
+plates %>% select(primerSet,library,eventID,replicateFilter,hashLabel) %>% write_csv(file=here(proj.path,"results/events-hashes.csv"))
 
-writeLines(paste0("\nDone. Sample barcodes written to ",proj.path))
+# report proj path 
+writeLines(paste0("\n...\nSample barcodes written to: 'temp/processing/",opt$primer,"-",opt$lib,"'"))
