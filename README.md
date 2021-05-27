@@ -1,7 +1,8 @@
 # meta-fish-pipe
 Bioinformatics pipeline for fish metabarcoding
 
-
+# print date and time
+date
 
 ### FOR LIB3
 
@@ -9,8 +10,8 @@ Bioinformatics pipeline for fish metabarcoding
 scripts/prepare.sh -p tele02 -l lib3
 
 # make symlinks
-ln -s ~/Projects/SeaDNA/temp-local-only/fastq/reduced/lib3/R1.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib3/fastq/R1.fastq.gz
-ln -s ~/Projects/SeaDNA/temp-local-only/fastq/reduced/lib3/R2.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib3/fastq/R2.fastq.gz
+#ln -s ~/Projects/SeaDNA/temp-local-only/fastq/reduced/lib3/R1.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib3/fastq/R1.fastq.gz
+#ln -s ~/Projects/SeaDNA/temp-local-only/fastq/reduced/lib3/R2.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib3/fastq/R2.fastq.gz
 # uni
 ln -s /media/1TB/rc16041/Projects-temp-local-only/seadna-temp-local-only/fastq/reduced/lib3/R1.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib3/fastq/R1.fastq.gz
 ln -s /media/1TB/rc16041/Projects-temp-local-only/seadna-temp-local-only/fastq/reduced/lib3/R2.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib3/fastq/R2.fastq.gz
@@ -31,8 +32,8 @@ scripts/dada2.R -p tele02 -l lib3
 scripts/prepare.sh -p tele02 -l lib4
 
 # make symlinks HOME
-ln -s ~/Projects/SeaDNA/temp-local-only/fastq/reduced/lib4/R1.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib4/fastq/R1.fastq.gz
-ln -s ~/Projects/SeaDNA/temp-local-only/fastq/reduced/lib4/R2.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib4/fastq/R2.fastq.gz
+#ln -s ~/Projects/SeaDNA/temp-local-only/fastq/reduced/lib4/R1.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib4/fastq/R1.fastq.gz
+#ln -s ~/Projects/SeaDNA/temp-local-only/fastq/reduced/lib4/R2.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib4/fastq/R2.fastq.gz
 # uni
 ln -s /media/1TB/rc16041/Projects-temp-local-only/seadna-temp-local-only/fastq/reduced/lib4/R1.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib4/fastq/R1.fastq.gz
 ln -s /media/1TB/rc16041/Projects-temp-local-only/seadna-temp-local-only/fastq/reduced/lib4/R2.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib4/fastq/R2.fastq.gz
@@ -57,6 +58,20 @@ scripts/taxonomic-assignment.sh -t 8 -p tele02
 
 # assemble results
 scripts/assemble-results.R
+
+
+# print date and time again
+date
+
+
+
+
+
+
+
+
+
+
 
 
 
