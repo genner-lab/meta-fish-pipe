@@ -223,10 +223,10 @@ total <- otu.tab %>% summarise_if(is.numeric, sum, na.rm=TRUE) %>% rowSums()
 lost <- otu.tab %>% filter(!asv %in% names(dnas.curated.clean)) %>% summarise_if(is.numeric, sum, na.rm=TRUE) %>% rowSums()
 retained <- otu.tab.clean %>% summarise_if(is.numeric, sum, na.rm=TRUE) %>% rowSums()
 
+# write stats
+stats <- tibble(library=paste0(opt$primer,"-",opt$lib),stat=c("merge","chim","homol"),nreads=c(sum(merged.seqtab),sum(merged.seqtab.nochim),retained))
+stats %>% write_csv(file=paste0(proj.path,"/logs/stats.csv"))
+
 # report
 writeLines(paste0("\n...\nCleaned ASVs written to: '",paste0("temp/processing/",opt$primer,"-",opt$lib,"/results/asvs-clean.fasta'")))
 writeLines(paste0("\n...\nCleaned ASV table written to: '",paste0("temp/processing/",opt$primer,"-",opt$lib,"/results/asv-table-clean.tsv'")))
-
-# write stats
-stats <- paste0("merge,",sum(merged.seqtab),"\n","chim,",sum(merged.seqtab.nochim),"\n","homol,",retained)
-writeLines(stats,paste0(proj.path,"/logs/dada-stats.csv"))
