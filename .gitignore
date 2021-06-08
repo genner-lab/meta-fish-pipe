@@ -41,7 +41,6 @@ vignettes/*.pdf
 # output folders
 temp
 results
-assets/custom-reference-library.csv
-assets/custom-reference-library.fasta
-assets/refseq-annotated.fasta
-assets/contaminants-exclude.csv
+assets/custom*
+assets/contaminants*
+assets/refseq*
