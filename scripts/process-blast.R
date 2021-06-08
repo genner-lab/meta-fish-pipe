@@ -7,7 +7,7 @@ writeLines("\nProcessing BLAST results ...\n")
 source(here::here("scripts/funs-libs.R"))
 
 # import reference library
-custom.refs <- suppressMessages(suppressWarnings(read_csv(here("assets/custom-reference-library.csv"),guess_max=99999,col_types=cols())))
+custom.refs <- suppressMessages(suppressWarnings(read_csv(here("temp/taxonomic-assignment/custom-reference-library-reduced.csv"),guess_max=99999,col_types=cols())))
 
 # load blast result
 local.db.blast <- suppressMessages(suppressWarnings(read_tsv(here("temp/taxonomic-assignment/fish-blast-result.tsv"))))
