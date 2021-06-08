@@ -59,7 +59,7 @@ scripts/generate-stats.sh -p tele02 -l lib4 -t 8
 ############## ALL LIBS - TAXONOMIC ASSIGNMENT ##############
 
 # run taxonomic assignment
-scripts/taxonomic-assignment.sh -t 8 -p tele02
+scripts/taxonomic-assignment.sh -t 8 -p tele02 -r assets/refseq206-annotated-tele02.csv -c assets/custom-reference-library.csv
 
 # assemble results
 scripts/assemble-results.R
@@ -78,7 +78,6 @@ rm -r results temp
 ############## JOBS TO DO #####
 
 - documentation
-- repo for reflibs
 - update all the software and test
 
 
