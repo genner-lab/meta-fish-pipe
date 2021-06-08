@@ -1,15 +1,31 @@
 #!/usr/bin/env sh
 
 # set params #
-while getopts t:p: option
+while getopts t:p:r:c: option
 do
 case "${option}"
 in
 t) THREADS=${OPTARG};;
 p) PRIMER=${OPTARG};;
+r) REFSEQ=${OPTARG};;
+c) CUSTOM=${OPTARG};;
 esac
 done
 
+############## PREP REFERENCE LIBRARIES ##############
+############## PREP REFERENCE LIBRARIES ##############
+
+# make dirs
+mkdir -p temp/taxonomic-assignment/epa
+
+# copy across refseq db
+cp "$REFSEQ" temp/taxonomic-assignment/refseq-annotated.csv
+
+# copy across custom db
+cp "$CUSTOM" temp/taxonomic-assignment/custom-reference-library.csv
+
+# format and subset reference libraries
+scripts/prep-reflibs.R -p "$PRIMER"
 
 
 ############## MERGE AND DEREP ASVs ##############
@@ -33,7 +49,7 @@ vsearch --derep_fulllength temp/taxonomic-assignment/asvs-clean-cat-relabel.fast
 ############## RUN SINTAX ON REFSEQ ##############
 
 # run sintax
-vsearch --threads "$THREADS" --sintax temp/taxonomic-assignment/asvs-clean-cat-relabel-derep.fasta --db assets/refseq-annotated.fasta --sintax_cutoff 0.7 --tabbedout temp/taxonomic-assignment/sintax-output.tsv
+vsearch --threads "$THREADS" --sintax temp/taxonomic-assignment/asvs-clean-cat-relabel-derep.fasta --db temp/taxonomic-assignment/refseq-annotated.fasta --sintax_cutoff 0.7 --tabbedout temp/taxonomic-assignment/sintax-output.tsv
 
 
 ############## EXTRACT FISH ASVs ##############
@@ -46,7 +62,6 @@ scripts/extract-fishes.R
 ############## RUN BLAST ON FISH ASVs ##############
 
 # make blast db (only need to do this step once)
-cp assets/custom-reference-library.fasta temp/taxonomic-assignment/custom-reference-library.fasta
 makeblastdb -in temp/taxonomic-assignment/custom-reference-library.fasta -dbtype nucl -blastdb_version 5
 
 # blast the blast db
@@ -63,21 +78,15 @@ rm temp/taxonomic-assignment/headers
 ############## PROCESS BLAST RESULTS ##############
 ############## PROCESS BLAST RESULTS ##############
 
+# process blast
 scripts/process-blast.R
 
 
-############## PREP FOR EPA ASSIGNMENT ##############
-############## PREP FOR EPA ASSIGNMENT ##############
-
-# process the alignment for EPA
-mkdir -p temp/taxonomic-assignment/epa
-
-#scripts/prep-epa.R -p tele02
-scripts/prep-epa.R -p "$PRIMER"
-
-
 ############## ALIGN AND RUN EPA ##############
 ############## ALIGN AND RUN EPA ##############
+
+# prep for EPA
+scripts/prep-epa.R
 
 # align with mafft (accurate)
 mafft --thread "$THREADS" --maxiterate 1000 --genafpair temp/taxonomic-assignment/epa/epa.input.fasta > temp/taxonomic-assignment/epa/epa.aligned.fasta
