@@ -1,18 +1,26 @@
 #!/usr/bin/env sh
 
 # set params #
-while getopts p:l: option
+while getopts p:l:r:c: option
 do
 case "${option}"
 in
 p) PRIMER=${OPTARG};;
 l) LIB=${OPTARG};;
+r) REFSEQ=${OPTARG};;
+c) CUSTOM=${OPTARG};;
 esac
 done
 
 
 # make temp and results dirs
-mkdir -p results temp/taxonomic-assignment
+mkdir -p results temp/taxonomic-assignment/epa
+
+# copy across refseq db
+cp "$REFSEQ" temp/taxonomic-assignment/refseq-annotated.csv
+
+# copy across custom db
+cp "$CUSTOM" temp/taxonomic-assignment/custom-reference-library.csv
 
 # report R libs
 Rscript scripts/get-r-libs.R
