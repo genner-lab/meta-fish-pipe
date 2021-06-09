@@ -35,7 +35,7 @@ custom.refs.sub <- subset_by_marker(prefix=prefix,df=custom.refs,thresh=0.5)
 
 # format custom
 custom.refs.sub.clean <- custom.refs.sub %>% 
-    mutate(source="custom",phylum="Chordata") %>%
+    mutate(kingdom="Animalia",phylum="Chordata") %>%
     select(source,dbid,kingdom,phylum,class,order,family,genus,sciNameValid,paste0("lengthFrag.",prefix),paste0("nucleotidesFrag.",prefix)) %>%
     rename(length=paste0("lengthFrag.",prefix),nucleotides=paste0("nucleotidesFrag.",prefix))
 
@@ -45,7 +45,7 @@ refseq.refs <- suppressMessages(suppressWarnings(read_csv(here("temp/taxonomic-a
 
 # format refseq
 refseq.refs.clean <- refseq.refs %>% 
-    mutate(source="refseq") %>% 
+    mutate(source="REFSEQ") %>% 
     select(source,accession,kingdom,phylum,class,order,family,genus,scientificName,length,nucleotides) %>% 
     rename(dbid=accession,sciNameValid=scientificName)
 
