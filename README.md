@@ -1,98 +1,168 @@
+[![DOI](https://zenodo.org/badge/xxx.svg)](https://zenodo.org/badge/latestdoi/xxx)
+
 # meta-fish-pipe
-Bioinformatics pipeline for fish metabarcoding
 
-# get date and time
-then=$(date)
+A bioinformatics pipeline for fish metabarcoding. Currently supported 12S metabarcode markers are: 'tele02', 'mifish-u', 'elas02', and 'mifish-u-mod'.
 
-### FOR LIB3 ###
+### Setup (do once)
 
-# prep
-scripts/prepare.sh -p tele02 -l lib3
+1. Install the following software on your system, and make them available on your $PATH: [cutadapt](https://github.com/marcelm/cutadapt) v3.4, [vsearch](https://github.com/torognes/vsearch) v2.17.0, [seqkit](https://github.com/shenwei356/seqkit) v0.16.1, [raxml-ng](https://github.com/amkozlov/raxml-ng) v1.0.2, [epa-ng](https://github.com/Pbdas/epa-ng) v0.3.8, [gappa](https://github.com/lczech/gappa) v0.7.1, [hmmer](http://hmmer.org/) v3.1b2, [ncbi-blast](https://blast.ncbi.nlm.nih.gov/Blast.cgi?CMD=Web&PAGE_TYPE=BlastDocs&DOC_TYPE=Download) v2.11.0, [mafft](http://mafft.cbrc.jp/alignment/software/) v7.271.
 
-# make symlinks
-#ln -s ~/Projects/SeaDNA/temp-local-only/fastq/reduced/lib3/R1.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib3/fastq/R1.fastq.gz
-#ln -s ~/Projects/SeaDNA/temp-local-only/fastq/reduced/lib3/R2.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib3/fastq/R2.fastq.gz
-# uni
-ln -s /media/1TB/rc16041/Projects-temp-local-only/seadna-temp-local-only/fastq/reduced/lib3/R1.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib3/fastq/R1.fastq.gz
-ln -s /media/1TB/rc16041/Projects-temp-local-only/seadna-temp-local-only/fastq/reduced/lib3/R2.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib3/fastq/R2.fastq.gz
+2. Clone the repository:
 
+```
+git clone https://github.com/genner-lab/meta-fish-pipe.git
+```
+
+3. Change directory:
+
+```
+cd meta-fish-pipe
+```
+
+4. Obtain correct R packages:
+
+```
+Rscript -e "renv::restore()"
+```
+
+### User data (do once)
+
+Users must provide 4 files. They can be named however you like, but must be added to the `assets/` directory before running the pipeline. They include:
+
+1. Your custom 'curated fish' reference library in CSV format, which can be obtained from [https://github.com/genner-lab/meta-fish-lib](https://github.com/genner-lab/meta-fish-lib).
+
+2. Your ReqSeq 'all taxa' reference library in CSV format, which can be obtained from [https://github.com/genner-lab/refseq-reflib](https://github.com/genner-lab/refseq-reflib).
+
+3. A 'samples' file containing your sample/primer/tag information in CSV format. There must be 8 named columns, as shown in this example file: [samples-examples.csv](assets/samples-examples.csv).
+
+4. A file in CSV format containing DNA sequences that are known or suspected to be contaminants from other experiments in the lab. There must be 3 named columns, as shown in this example file: [contaminants-examples.csv](assets/contaminants-examples.csv).
+
+### Prepare (for each library)
+
+This script sets up your working area for each library. It also prints out session information including software and R package versions.
+
+- The '-p' flag is the primer set. Must be one of 'tele02', 'mifish-u', 'elas02', 'mifish-u-mod'. It must also match the 'primerSet' field in your provided samples file.
+
+- The '-l' flag is the name of your library. It must also match the 'library' field in your provided samples file.
+
+- The '-r' flag is the path to the ReqSeq 'all taxa' reference library.
+
+- The '-c' flag is the path to the custom 'curated fish' reference library.
+
+```
+# prepare working area
+scripts/prepare.sh -p tele02 -l lib1 -r assets/refseq206-annotated-tele02.csv -c assets/meta-fish-lib-v243.csv
+```
+
+- Now create a link to your R1 and R2 fastq read files from their current location on your computer into the location required for the pipeline (for each library). It is important that 'tele02' and 'lib1' paths match the flags used for `prepare.sh` and that the files are simply named 'R1.fastq.gz' and 'R2.fastq.gz'. 
+
+```
+# create symbolic link
+ln -s /your/file/path/fileR1.fastq.gz temp/processing/tele02-lib1/fastq/R1.fastq.gz
+ln -s /your/file/path/fileR2.fastq.gz temp/processing/tele02-lib1/fastq/R2.fastq.gz
+
+```
+
+
+### Generate barcodes (for each library)
+
+This script creates the sample barcode tags for demultiplexing, using information in your sample sheet (for each library).
+
+- The '-p' flag is the primer set. Must be one of 'tele02', 'mifish-u', 'elas02', 'mifish-u-mod'. It must also match the 'primerSet' field in your provided samples file.
+
+- The '-l' flag is the name of your library. It must also match the 'library' field in your provided samples file.
+
+- The '-f' flag is the length of your forward PCR primer in base pairs (bp).
+
+- The '-r' flag is the length of your reverse PCR primer (bp).
+
+- The '-m' flag is the path to your samples file in `assets/`.
+
+```
 # generate barcodes
-scripts/generate-barcodes.R -p tele02 -l lib3 -f 18 -r 20
+scripts/generate-barcodes.R -p tele02 -l lib1 -f 18 -r 20 -m assets/sequencing-master-may2021.csv
+```
 
-# demux
-scripts/demultiplex.sh -p tele02 -l lib3 -f AAACTCGTGCCAGCCACC -r GGGTATCTAATCCCAGTTTG -t 8 -m 18
+### Demultiplex (for each library)
 
+This script finds sequences with attached primers, demultiplexes the samples using the sample tags for each library, and then trims off the primers.
+
+- The '-p' flag is the primer set. Must be one of 'tele02', 'mifish-u', 'elas02', 'mifish-u-mod'.
+
+- The '-l' flag is the name of your library.
+
+- The '-f' flag is the forward PCR primer sequence.
+
+- The '-r' flag is the reverse PCR primer sequence.
+
+- The '-t' flag is the number of processing threads.
+
+- The '-m' flag is the length (bp) of the shorter primer (or length of both if same).
+
+```
+# demultiplex
+scripts/demultiplex.sh -p tele02 -l lib1 -f AAACTCGTGCCAGCCACC -r GGGTATCTAATCCCAGTTTG -t 8 -m 18
+```
+
+### Denoise (for each library)
+
+This script runs the quality trimming, dada2 denoising, dereplication, and chimaera removal. The resulting amplicon sequence variants (ASVs) are then cleaned with hidden Markov models to remove the non-homologous sequences.
+
+- The '-p' flag is the primer set. Must be one of 'tele02', 'mifish-u', 'elas02', 'mifish-u-mod'.
+
+- The '-l' flag is the name of your library.
+
+```
 # denoise with dada2
-scripts/dada2.R -p tele02 -l lib3
+scripts/dada2.R -p tele02 -l lib1
+```
 
+### Generate stats (for each library)
+
+This script generates reads numbers at each stage of the pipeline. 
+
+- The '-p' flag is the primer set. Must be one of 'tele02', 'mifish-u', 'elas02', 'mifish-u-mod'.
+
+- The '-l' flag is the name of your library.
+
+- The '-t' flag is the number of processing threads.
+
+```
 # generate stats
-scripts/generate-stats.sh -p tele02 -l lib3 -t 8
+scripts/generate-stats.sh -p tele02 -l lib1 -t 8
+```
 
+### Taxonomic assignment (once for all libraries)
 
-### FOR LIB4 ###
+Once all libraries have been processed, this script performs taxonomic assignment using: (a) sintax; (b) blastn; and (c) epa, using the ReqSeq 'all taxa' reference library and custom 'curated fish' reference library.
 
-# prep
-scripts/prepare.sh -p tele02 -l lib4
+- The '-p' flag is the primer set. Must be one of 'tele02', 'mifish-u', 'elas02', 'mifish-u-mod'.
 
-# make symlinks HOME
-#ln -s ~/Projects/SeaDNA/temp-local-only/fastq/reduced/lib4/R1.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib4/fastq/R1.fastq.gz
-#ln -s ~/Projects/SeaDNA/temp-local-only/fastq/reduced/lib4/R2.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib4/fastq/R2.fastq.gz
-# uni
-ln -s /media/1TB/rc16041/Projects-temp-local-only/seadna-temp-local-only/fastq/reduced/lib4/R1.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib4/fastq/R1.fastq.gz
-ln -s /media/1TB/rc16041/Projects-temp-local-only/seadna-temp-local-only/fastq/reduced/lib4/R2.fastq.gz ~/Projects/genner-lab/meta-fish-pipe/temp/processing/tele02-lib4/fastq/R2.fastq.gz
+- The '-t' flag is the number of processing threads.
 
-# generate barcodes
-scripts/generate-barcodes.R -p tele02 -l lib4 -f 18 -r 20
-
-# demux
-scripts/demultiplex.sh -p tele02 -l lib4 -f AAACTCGTGCCAGCCACC -r GGGTATCTAATCCCAGTTTG -t 8 -m 18
-
-# denoise with dada2
-scripts/dada2.R -p tele02 -l lib4
-
-# generate stats
-scripts/generate-stats.sh -p tele02 -l lib4 -t 8
-
-
-
-############## ALL LIBS - TAXONOMIC ASSIGNMENT ##############
-############## ALL LIBS - TAXONOMIC ASSIGNMENT ##############
-
+```
 # run taxonomic assignment
-scripts/taxonomic-assignment.sh -t 8 -p tele02 -r assets/refseq206-annotated-tele02.csv -c assets/custom-reference-library.csv
+scripts/taxonomic-assignment.sh -t 8 -p tele02
+```
 
+### Assemble results
+
+This script assembles all assignments for all libraries, and generates results tables and writes them into `results/`.
+
+- The '-c' flag is the path to your contaminants file in `assets/`.
+
+```
 # assemble results
-scripts/assemble-results.R
+scripts/assemble-results.R -c assets/contaminants-exclude-may2021.csv
+```
 
 
-# print date and time again
-now=$(date)
-echo "$then"
-echo "$now"
+### Clean up (optional)
 
-# clean up (optional) 
-rm -r results temp
+This script deletes the `temp/` directory to save disk space. ONLY RUN THIS IF YOU ARE ABSOLUTELY SURE YOU DO NOT STILL NEED THE INTERMEDIATE FILES AND DATA IN THERE. 
 
-
-
-############## JOBS TO DO #####
-
-- documentation
-- update all the software and test
-
-
-# grep a function
-grep -r "hap_collapse_df" .
-
-
-### refseq CHECK
-
-# trim primers from the custom reference library
-cutadapt -n 1 -e 0.3 -O 10 -g AAACTCGTGCCAGCCACC temp/reference-library/refseq-annotated.fasta | cutadapt --minimum-length 144 --maximum-length 216 -n 1 -e 0.3 -O 10 -a  CAAACTGGGATTAGATACCC -o temp/reference-library/refseq-annotated-trimmed.fasta -
-
-# my files
-mkdir -p reduced/lib3 reduced/lib4
-gzip -cd SeaDNA_Tele02_Lib03v2_R1.fastq.gz | head -n 400000 | gzip > reduced/lib3/R1.fastq.gz
-gzip -cd SeaDNA_Tele02_Lib03v2_R2.fastq.gz | head -n 400000 | gzip > reduced/lib3/R2.fastq.gz
-gzip -cd SeaDNA_Teleo02_Lib-04_S2_L001_R1_001.fastq.gz | head -n 400000 | gzip > reduced/lib4/R1.fastq.gz
-gzip -cd SeaDNA_Teleo02_Lib-04_S2_L001_R2_001.fastq.gz | head -n 400000 | gzip > reduced/lib4/R2.fastq.gz
+```
+# clean up
+rm -r temp
+```
