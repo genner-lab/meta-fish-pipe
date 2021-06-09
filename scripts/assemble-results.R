@@ -6,6 +6,13 @@ writeLines("\nAssembling results ...\n")
 # load libs and funs
 source(here::here("scripts/funs-libs.R"))
 
+# get args
+option_list <- list( 
+    make_option(c("-c","--contam"), type="character")
+    )
+# set args
+opt <- parse_args(OptionParser(option_list=option_list,add_help_option=FALSE))
+
 
 ############## LOAD DATA AND JOIN ##############
 ############## LOAD DATA AND JOIN ##############
@@ -16,7 +23,7 @@ local.db.blast.sorted <- suppressMessages(suppressWarnings(read_csv(file=here("t
 epa.results.filtered <- suppressMessages(suppressWarnings(read_csv(file=here("temp/taxonomic-assignment/epa/epa-results-filtered.csv"))))
 
 # read in contamination exclusions
-contam.table <- suppressMessages(suppressWarnings(read_csv(here("assets/contaminants-exclude.csv"))))
+contam.table <- suppressMessages(suppressWarnings(read_csv(here(opt$contam))))
 
 # add dnas, get length and mode
 dnas <- read.FASTA(file=here("temp/taxonomic-assignment/asvs-clean-cat-relabel-derep.fasta"))
