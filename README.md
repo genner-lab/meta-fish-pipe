@@ -34,9 +34,9 @@ Users must provide 4 files. They can be named however you like, but must be adde
 
 2. Your ReqSeq 'all taxa' reference library in CSV format, which can be obtained from [https://github.com/genner-lab/refseq-reflib](https://github.com/genner-lab/refseq-reflib).
 
-3. A 'samples' file containing your sample/primer/tag information in CSV format. There must be 8 named columns, as shown in this example file: [samples-examples.csv](assets/samples-examples.csv).
+3. A 'samples' file containing your sample/primer/tag information in CSV format. There must be 8 named columns, as shown in this example file: [samples-examples.csv](assets/examples/samples-examples.csv).
 
-4. A file in CSV format containing DNA sequences that are known or suspected to be contaminants from other experiments in the lab. There must be 3 named columns, as shown in this example file: [contaminants-examples.csv](assets/contaminants-examples.csv).
+4. A file in CSV format containing DNA sequences that are known or suspected to be contaminants from other experiments in the lab. There must be 3 named columns, as shown in this example file: [contaminants-examples.csv](assets/examples/contaminants-examples.csv).
 
 ### Prepare (for each library)
 
