@@ -11,7 +11,8 @@ option_list <- list(
     make_option(c("-p","--primer"), type="character"),
     make_option(c("-l","--lib"), type="character"),
     make_option(c("-f","--lenfwd"), type="numeric"),
-    make_option(c("-r","--lenrev"), type="numeric")
+    make_option(c("-r","--lenrev"), type="numeric"),
+    make_option(c("-m","--master"), type="character")
     )
 # set args
 opt <- parse_args(OptionParser(option_list=option_list,add_help_option=FALSE))
@@ -27,7 +28,7 @@ opt <- parse_args(OptionParser(option_list=option_list,add_help_option=FALSE))
 proj.path <- here("temp/processing",paste0(opt$primer,"-",opt$lib))
 
 # load up the data
-plates <- suppressMessages(suppressWarnings(read_csv(file=here("assets/sequencing-master.csv"))))
+plates <- suppressMessages(suppressWarnings(read_csv(file=here(opt$master))))
 
 # check samples are all present in events-master - missing ones are blanks/ntc
 #events.master <- suppressMessages(suppressWarnings(read_csv(file=here("assets/events-master.csv"))))
