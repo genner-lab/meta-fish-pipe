@@ -1,28 +1,17 @@
 #!/usr/bin/env sh
 
 # set params #
-while getopts t:p:r:c: option
+while getopts t:p: option
 do
 case "${option}"
 in
 t) THREADS=${OPTARG};;
 p) PRIMER=${OPTARG};;
-r) REFSEQ=${OPTARG};;
-c) CUSTOM=${OPTARG};;
 esac
 done
 
 ############## PREP REFERENCE LIBRARIES ##############
 ############## PREP REFERENCE LIBRARIES ##############
-
-# make dirs
-mkdir -p temp/taxonomic-assignment/epa
-
-# copy across refseq db
-cp "$REFSEQ" temp/taxonomic-assignment/refseq-annotated.csv
-
-# copy across custom db
-cp "$CUSTOM" temp/taxonomic-assignment/custom-reference-library.csv
 
 # format and subset reference libraries
 scripts/prep-reflibs.R -p "$PRIMER"
