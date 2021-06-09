@@ -42,5 +42,9 @@ vignettes/*.pdf
 temp
 results
 assets/*
+!assets/examples
+assets/examples/*
 !assets/12s.miya.noprimers.hmm
 !assets/12s.taberlet.noprimers.hmm
+!assets/examples/samples-examples.csv
+!assets/examples/contaminants-examples.csv
