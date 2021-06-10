@@ -26,9 +26,9 @@ cd meta-fish-pipe
 Rscript -e "renv::restore()"
 ```
 
-### User data (do once)
+### Add user data and setup directories (per project)
 
-Users must provide 4 files. They can be named however you like, but must be added to the `assets/` directory before running the pipeline. They include:
+Users must provide 4 files for the project. They can be named however you like, but must be added to the `assets/` directory before running the pipeline. This files only need to be provided once at the beginning of the project.
 
 1. Your custom 'curated fish' reference library in CSV format, which can be obtained from [https://github.com/genner-lab/meta-fish-lib](https://github.com/genner-lab/meta-fish-lib).
 
@@ -38,21 +38,29 @@ Users must provide 4 files. They can be named however you like, but must be adde
 
 4. A file in CSV format containing DNA sequences that are known or suspected to be contaminants from other experiments in the lab. There must be 3 named columns, as shown in this example file: [contaminants-examples.csv](assets/examples/contaminants-examples.csv).
 
-### Prepare (for each library)
+### Record project session and prepare project directories 
 
-This script sets up your working area for each library. It also prints out session information including software and R package versions.
-
-- The '-p' flag is the primer set. Must be one of 'tele02', 'mifish-u', 'elas02', 'mifish-u-mod'. It must also match the 'primerSet' field in your provided samples file.
-
-- The '-l' flag is the name of your library. It must also match the 'library' field in your provided samples file.
+This script records the project session info (installed software and R package versions) and also sets up the project directories. Paths to the user submitted reference libraries need to be provided as follows. Script only needs to be run once at the beginning of the project.
 
 - The '-r' flag is the path to the ReqSeq 'all taxa' reference library.
 
 - The '-c' flag is the path to the custom 'curated fish' reference library.
 
 ```
-# prepare working area
-scripts/prepare.sh -p tele02 -l lib1 -r assets/refseq206-annotated-tele02.csv -c assets/meta-fish-lib-v243.csv
+scripts/session-info.sh -r assets/refseq206-annotated-tele02.csv -c assets/meta-fish-lib-v243.csv
+```
+
+### Prepare library directories and files
+
+This script sets up your working area directories for each library.
+
+- The '-p' flag is the primer set. Must be one of 'tele02', 'mifish-u', 'elas02', 'mifish-u-mod'. It must also match the 'primerSet' field in your provided samples file.
+
+- The '-l' flag is the name of your library. It must also match the 'library' field in your provided samples file.
+
+```
+# prepare working area directories
+scripts/prepare-libraries.sh -p tele02 -l lib1
 ```
 
 - Now create a link to your R1 and R2 fastq read files from their current location on your computer into the location required for the pipeline (for each library). It is important that 'tele02' and 'lib1' paths match the flags used for `prepare.sh` and that the files are simply named 'R1.fastq.gz' and 'R2.fastq.gz'. 
