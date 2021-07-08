@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/xxx.svg)](https://zenodo.org/badge/latestdoi/xxx)
+[![DOI](https://zenodo.org/badge/369834333.svg)](https://zenodo.org/badge/latestdoi/369834333)
 
 # meta-fish-pipe
 
