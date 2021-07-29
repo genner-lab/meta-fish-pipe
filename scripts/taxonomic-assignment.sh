@@ -28,7 +28,7 @@ vsearch --fastx_subsample temp/taxonomic-assignment/asvs-clean-cat.fasta --sampl
 
 # make a table of asvs
 echo "md5,primer,lib,asv" > temp/taxonomic-assignment/asvs-all.csv
-grep ">" temp/taxonomic-assignment/asvs-clean-cat-relabel.fasta | sed -e 's/>//g' -e 's/ /,/g' -e 's/-/,/g' >> temp/taxonomic-assignment/asvs-all.csv
+grep ">" temp/taxonomic-assignment/asvs-clean-cat-relabel.fasta | sed -e 's/>//g' -e 's/ /,/g' -e 's/|/,/g' >> temp/taxonomic-assignment/asvs-all.csv
 
 # derep the ASVs
 vsearch --derep_fulllength temp/taxonomic-assignment/asvs-clean-cat-relabel.fasta --minuniquesize 1 --fasta_width 0 --output temp/taxonomic-assignment/asvs-clean-cat-relabel-derep.fasta

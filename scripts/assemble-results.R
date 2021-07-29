@@ -67,7 +67,7 @@ taxonomy.results %<>% mutate(contaminationID=purrr::map_chr(nucleotides,find_mat
 asvs.all <- suppressMessages(suppressWarnings(read_csv(file=here("temp/taxonomic-assignment/asvs-all.csv"))))
 
 # make id
-asvs.all %<>% mutate(asvCode=paste(primer,lib,asv,sep="-")) %>% 
+asvs.all %<>% mutate(asvCode=paste(primer,lib,asv,sep="|")) %>% 
     select(-asv) %>% 
     rename(asvHash=md5,primerSet=primer,library=lib)
 

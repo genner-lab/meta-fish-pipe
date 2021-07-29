@@ -160,13 +160,13 @@ writeLines("\n...\nSaving raw ASV files\n")
 Sys.sleep(3)
 
 # make df and fasta for IDs
-otus.df <- tibble(names=paste0(opt$primer,"-",opt$lib,"-","asv",str_pad(seq_along(colnames(merged.seqtab.nochim)),width=4,side="left",pad="0")), dnas=colnames(merged.seqtab.nochim)) %>% mutate(len=str_length(dnas))
+otus.df <- tibble(names=paste0(opt$primer,"|",opt$lib,"|","asv",str_pad(seq_along(colnames(merged.seqtab.nochim)),width=4,side="left",pad="0")), dnas=colnames(merged.seqtab.nochim)) %>% mutate(len=str_length(dnas))
 
 # write out
 write.FASTA(tab2fas(df=otus.df, seqcol="dnas", namecol="names"), file=paste0(proj.path,"/results/asvs.fna"))
 
 # save the OTU table as df
-colnames(merged.seqtab.nochim) <- paste0(opt$primer,"-",opt$lib,"-","asv",str_pad(seq_along(colnames(merged.seqtab.nochim)),width=4,side="left",pad="0"))
+colnames(merged.seqtab.nochim) <- paste0(opt$primer,"|",opt$lib,"|","asv",str_pad(seq_along(colnames(merged.seqtab.nochim)),width=4,side="left",pad="0"))
 write_tsv(as_tibble(t(merged.seqtab.nochim), rownames="asv"), file=paste0(proj.path,"/results/asv-table.tsv"))
 
 # report
