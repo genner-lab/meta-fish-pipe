@@ -35,7 +35,7 @@ custom.refs.sub <- subset_by_marker(prefix=prefix,df=custom.refs,thresh=0.5)
 
 # format custom
 custom.refs.sub.clean <- custom.refs.sub %>% 
-    mutate(kingdom="Animalia",phylum="Chordata") %>%
+    mutate(kingdom="Animalia") %>%
     select(source,dbid,kingdom,phylum,class,order,family,genus,sciNameValid,paste0("lengthFrag.",prefix),paste0("nucleotidesFrag.",prefix)) %>%
     rename(length=paste0("lengthFrag.",prefix),nucleotides=paste0("nucleotidesFrag.",prefix))
 
