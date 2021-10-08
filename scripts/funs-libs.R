@@ -80,6 +80,7 @@ cpath <- function(sense,step,r){
 # function to query for contamination in an otu table
 find_matches <- function(query,referencedb){
     res <- pull(referencedb,label)[which(grepl(query,pull(referencedb,nucleotides)))]
+    res <- res[1]
     if(length(res)==0){
     res <- NA} else {res}
     return(res)
