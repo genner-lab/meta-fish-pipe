@@ -85,19 +85,19 @@ scripts/split.R
 
 # make RAxML trees for all markers
 # create a binary and set model
-raxml-ng --msa temp/taxonomic-assignment/epa/epa.references.fasta --model TN93+G --parse
+raxml-ng --parse --msa temp/taxonomic-assignment/epa/epa.references.fasta --model TN93+G --redo
 
 # run a tree search
-raxml-ng --msa temp/taxonomic-assignment/epa/epa.references.fasta.raxml.rba --tree pars{1} --search --seed 42 --threads 1
+raxml-ng --search --msa temp/taxonomic-assignment/epa/epa.references.fasta.raxml.rba --tree pars{1} --seed 42 --threads 1 --redo
 
 # optimise params
-raxml-ng --msa temp/taxonomic-assignment/epa/epa.references.fasta.raxml.rba --evaluate --tree temp/taxonomic-assignment/epa/epa.references.fasta.raxml.rba.raxml.bestTree --prefix temp/taxonomic-assignment/epa/opt
+raxml-ng --evaluate --msa temp/taxonomic-assignment/epa/epa.references.fasta.raxml.rba --tree temp/taxonomic-assignment/epa/epa.references.fasta.raxml.rba.raxml.bestTree --prefix temp/taxonomic-assignment/epa/opt --redo
 
 # run epa-ng
 epa-ng --ref-msa temp/taxonomic-assignment/epa/epa.references.fasta --tree temp/taxonomic-assignment/epa/epa.references.fasta.raxml.rba.raxml.bestTree --query temp/taxonomic-assignment/epa/epa.queries.fasta --outdir temp/taxonomic-assignment/epa --model temp/taxonomic-assignment/epa/opt.raxml.bestModel --redo --preserve-rooting off
 
 # run gappa
-gappa examine assign --per-query-results --jplace-path temp/taxonomic-assignment/epa/epa_result.jplace --taxon-file temp/taxonomic-assignment/epa/references.taxonomy.tsv --out-dir temp/taxonomic-assignment/epa
+gappa examine assign --per-query-results --jplace-path temp/taxonomic-assignment/epa/epa_result.jplace --taxon-file temp/taxonomic-assignment/epa/references.taxonomy.tsv --out-dir temp/taxonomic-assignment/epa --allow-file-overwriting
 
 # rename best tree to keep
 mv temp/taxonomic-assignment/epa/epa.references.fasta.raxml.rba.raxml.bestTree temp/taxonomic-assignment/epa/references.tree.nwk
