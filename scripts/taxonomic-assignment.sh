@@ -78,7 +78,7 @@ scripts/process-blast.R
 scripts/prep-epa.R
 
 # align with mafft (accurate)
-mafft --thread "$THREADS" --maxiterate 1000 --genafpair temp/taxonomic-assignment/epa/epa.input.fasta > temp/taxonomic-assignment/epa/epa.aligned.fasta
+mafft --thread "$THREADS" --retree 2 --maxiterate 2 temp/taxonomic-assignment/epa/epa.input.fasta > temp/taxonomic-assignment/epa/epa.aligned.fasta
 
 # split up references and queries for epa
 scripts/split.R
