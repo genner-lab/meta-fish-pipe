@@ -13,7 +13,8 @@ source(here::here("scripts/funs-libs.R"))
 option_list <- list( 
     make_option(c("-p","--primer"), type="character"),
     make_option(c("-l","--lib"), type="character"),
-    make_option(c("-t","--threads"),type="numeric")
+    make_option(c("-t","--threads"),type="numeric"),
+    make_option(c("-e","--maxee"),type="numeric")
     )
 
 # set args
@@ -39,8 +40,8 @@ writeLines("\n...\nQuality trimming and truncating\n")
 Sys.sleep(3)
 
 # quality trim Ns and truncate
-filterAndTrim(fwd=cpath("sense","trimmed","R1"), filt=cpath("sense","filtered","R1"), rev=cpath("sense","trimmed","R2"), filt.rev=cpath("sense","filtered","R2"), maxN=0, maxEE=c(1,1), truncQ=2, rm.phix=TRUE, truncLen=trucVal, multithread=opt$threads, verbose=TRUE, matchIDs=TRUE)
-filterAndTrim(fwd=cpath("antisense","trimmed","R1"), filt=cpath("antisense","filtered","R1"), rev=cpath("antisense","trimmed","R2"), filt.rev=cpath("antisense","filtered","R2"), maxN=0, maxEE=c(1,1), truncQ=2, rm.phix=TRUE, truncLen=trucVal, multithread=opt$threads, verbose=TRUE, matchIDs=TRUE)
+filterAndTrim(fwd=cpath("sense","trimmed","R1"), filt=cpath("sense","filtered","R1"), rev=cpath("sense","trimmed","R2"), filt.rev=cpath("sense","filtered","R2"), maxN=0, maxEE=c(opt$maxee,opt$maxee), truncQ=2, rm.phix=TRUE, truncLen=trucVal, multithread=opt$threads, verbose=TRUE, matchIDs=TRUE)
+filterAndTrim(fwd=cpath("antisense","trimmed","R1"), filt=cpath("antisense","filtered","R1"), rev=cpath("antisense","trimmed","R2"), filt.rev=cpath("antisense","filtered","R2"), maxN=0, maxEE=c(opt$maxee,opt$maxee), truncQ=2, rm.phix=TRUE, truncLen=trucVal, multithread=opt$threads, verbose=TRUE, matchIDs=TRUE)
 
 
 ############## LEARN ERRORS ##############

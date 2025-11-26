@@ -121,6 +121,10 @@ This script runs the quality trimming, dada2 denoising, dereplication, and chima
 
 - The '-l' flag is the name of your library.
 
+- The '-t' flag is the number of dada2 processing threads.
+
+- The '-e' flag is the maximum expected error value (maxEE).
+
 ```
 # denoise with dada2
 scripts/dada2.R -p tele02 -l lib1
