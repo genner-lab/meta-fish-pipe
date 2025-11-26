@@ -514,10 +514,9 @@
     },
     "isoband": {
       "Package": "isoband",
-      "Version": "0.2.4",
+      "Version": "0.2.7",
       "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "b2008df40fb297e3fef135c7e8eeec1a"
+      "Repository": "CRAN"
     },
     "jpeg": {
       "Package": "jpeg",
