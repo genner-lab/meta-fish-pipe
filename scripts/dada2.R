@@ -12,7 +12,8 @@ source(here::here("scripts/funs-libs.R"))
 # get args
 option_list <- list( 
     make_option(c("-p","--primer"), type="character"),
-    make_option(c("-l","--lib"), type="character")
+    make_option(c("-l","--lib"), type="character"),
+    make_option(c("-t","--threads"),type="numeric")
     )
 
 # set args
@@ -38,8 +39,8 @@ writeLines("\n...\nQuality trimming and truncating\n")
 Sys.sleep(3)
 
 # quality trim Ns and truncate
-filterAndTrim(fwd=cpath("sense","trimmed","R1"), filt=cpath("sense","filtered","R1"), rev=cpath("sense","trimmed","R2"), filt.rev=cpath("sense","filtered","R2"), maxN=0, maxEE=c(2,2), truncQ=2, rm.phix=TRUE, truncLen=trucVal, multithread=TRUE, verbose=TRUE, matchIDs=TRUE)
-filterAndTrim(fwd=cpath("antisense","trimmed","R1"), filt=cpath("antisense","filtered","R1"), rev=cpath("antisense","trimmed","R2"), filt.rev=cpath("antisense","filtered","R2"), maxN=0, maxEE=c(2,2), truncQ=2, rm.phix=TRUE, truncLen=trucVal, multithread=TRUE, verbose=TRUE, matchIDs=TRUE)
+filterAndTrim(fwd=cpath("sense","trimmed","R1"), filt=cpath("sense","filtered","R1"), rev=cpath("sense","trimmed","R2"), filt.rev=cpath("sense","filtered","R2"), maxN=0, maxEE=c(1,1), truncQ=2, rm.phix=TRUE, truncLen=trucVal, multithread=opt$threads, verbose=TRUE, matchIDs=TRUE)
+filterAndTrim(fwd=cpath("antisense","trimmed","R1"), filt=cpath("antisense","filtered","R1"), rev=cpath("antisense","trimmed","R2"), filt.rev=cpath("antisense","filtered","R2"), maxN=0, maxEE=c(1,1), truncQ=2, rm.phix=TRUE, truncLen=trucVal, multithread=opt$threads, verbose=TRUE, matchIDs=TRUE)
 
 
 ############## LEARN ERRORS ##############
@@ -51,13 +52,13 @@ Sys.sleep(3)
 
 # learn errors
 set.seed(42)
-sense.filt.R1.errs <- learnErrors(cpath("sense","filtered","R1"), multithread=TRUE, randomize=TRUE, nbases=1e+08, verbose=TRUE)
+sense.filt.R1.errs <- learnErrors(cpath("sense","filtered","R1"), multithread=opt$threads, randomize=TRUE, nbases=1e+08, verbose=TRUE)
 set.seed(42)
-sense.filt.R2.errs <- learnErrors(cpath("sense","filtered","R2"), multithread=TRUE, randomize=TRUE, nbases=1e+08, verbose=TRUE)
+sense.filt.R2.errs <- learnErrors(cpath("sense","filtered","R2"), multithread=opt$threads, randomize=TRUE, nbases=1e+08, verbose=TRUE)
 set.seed(42)
-antisense.filt.R1.errs <- learnErrors(cpath("antisense","filtered","R1"), multithread=TRUE, randomize=TRUE, nbases=1e+08, verbose=TRUE)
+antisense.filt.R1.errs <- learnErrors(cpath("antisense","filtered","R1"), multithread=opt$threads, randomize=TRUE, nbases=1e+08, verbose=TRUE)
 set.seed(42)
-antisense.filt.R2.errs <- learnErrors(cpath("antisense","filtered","R2"), multithread=TRUE, randomize=TRUE, nbases=1e+08, verbose=TRUE)
+antisense.filt.R2.errs <- learnErrors(cpath("antisense","filtered","R2"), multithread=opt$threads, randomize=TRUE, nbases=1e+08, verbose=TRUE)
 
 
 ############## MAKE PRIORS ##############
@@ -95,10 +96,10 @@ writeLines("\n...\ndada2 denoising\n")
 Sys.sleep(3)
 
 # run dada denoising - takes time with pool=TRUE
-sense.filt.R1.dada <- dada(cpath("sense","filtered","R1"), err=sense.filt.R1.errs, multithread=TRUE, pool=TRUE, priors=fish.priors)
-sense.filt.R2.dada <- dada(cpath("sense","filtered","R2"), err=sense.filt.R2.errs, multithread=TRUE, pool=TRUE, priors=fish.priors)
-antisense.filt.R1.dada <- dada(cpath("antisense","filtered","R1"), err=antisense.filt.R1.errs, multithread=TRUE, pool=TRUE, priors=fish.priors)
-antisense.filt.R2.dada <- dada(cpath("antisense","filtered","R2"), err=antisense.filt.R2.errs, multithread=TRUE, pool=TRUE, priors=fish.priors)
+sense.filt.R1.dada <- dada(cpath("sense","filtered","R1"), err=sense.filt.R1.errs, multithread=opt$threads, pool=TRUE, priors=fish.priors)
+sense.filt.R2.dada <- dada(cpath("sense","filtered","R2"), err=sense.filt.R2.errs, multithread=opt$threads, pool=TRUE, priors=fish.priors)
+antisense.filt.R1.dada <- dada(cpath("antisense","filtered","R1"), err=antisense.filt.R1.errs, multithread=opt$threads, pool=TRUE, priors=fish.priors)
+antisense.filt.R2.dada <- dada(cpath("antisense","filtered","R2"), err=antisense.filt.R2.errs, multithread=opt$threads, pool=TRUE, priors=fish.priors)
 
 
 ############## DEREPLICATE ##############
@@ -149,7 +150,7 @@ writeLines("\n...\nDetecting chimaeras\n")
 Sys.sleep(3)
 
 # remove chimaeras
-merged.seqtab.nochim <- removeBimeraDenovo(merged.seqtab, method="consensus", multithread=TRUE, verbose=TRUE)
+merged.seqtab.nochim <- removeBimeraDenovo(merged.seqtab, method="consensus", multithread=opt$threads, verbose=TRUE)
 
 
 ############## SAVE FILES ##############
