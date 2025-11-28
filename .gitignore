@@ -46,5 +46,6 @@ assets/*
 assets/examples/*
 !assets/12s.miya.noprimers.hmm
 !assets/12s.taberlet.noprimers.hmm
+!assets/coi.leese.noprimers.hmm
 !assets/examples/samples-examples.csv
 !assets/examples/contaminants-examples.csv
