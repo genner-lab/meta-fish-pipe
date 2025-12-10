@@ -20,8 +20,10 @@ if(opt$primer=="tele02") {
     prefix <- "12s.taberlet.noprimers"
 } else if(opt$primer=="elas02" | opt$primer=="mifish-u" | opt$primer=="mifish-u-mod") {
     prefix <- "12s.miya.noprimers"
+} else if(opt$primer=="leese") {
+    prefix <- "coi.leese.noprimers"
 } else {
-    stop("Primers must be 'tele02', 'elas02', 'mifish-u', or 'mifish-u-mod'")
+    stop("Primers must be 'leese', 'tele02', 'elas02', 'mifish-u', or 'mifish-u-mod'")
 }
 
 # to test
@@ -35,7 +37,7 @@ custom.refs.sub <- subset_by_marker(prefix=prefix,df=custom.refs,thresh=0.5)
 
 # format custom
 custom.refs.sub.clean <- custom.refs.sub %>% 
-    mutate(kingdom="Animalia") %>%
+    #mutate(kingdom="Animalia") %>%
     select(source,dbid,kingdom,phylum,class,order,family,genus,sciNameValid,paste0("lengthFrag.",prefix),paste0("nucleotidesFrag.",prefix)) %>%
     rename(length=paste0("lengthFrag.",prefix),nucleotides=paste0("nucleotidesFrag.",prefix))
 

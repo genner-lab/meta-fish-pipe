@@ -18,7 +18,8 @@ tax.ass.df %<>%
     mutate(idsProbsTemp=str_replace_all(idsProbs,"[a-z]:",""),idsProbsTemp=str_replace_all(idsProbsTemp,"\\([0-9].[0-9][0-9]\\)","")) %>%
     separate(idsProbsTemp,into=c("kingdom","phylum","class","order","family","genus","sintaxSpeciesID"),sep=",") %>%
     mutate(sintaxSpeciesID=str_replace_all(sintaxSpeciesID,"_", " ")) %>%
-    mutate(isFish=if_else(class=="Sarcopterygii" | class=="Cephalaspidomorphi" | class=="Elasmobranchii" | class=="Myxini" | class=="Holocephali" | class=="Actinopterygii" | class=="Chondrichthyes", TRUE, FALSE)) %>%
+    mutate(isFish=TRUE) %>%
+    #mutate(isFish=if_else(class=="Sarcopterygii" | class=="Cephalaspidomorphi" | class=="Elasmobranchii" | class=="Myxini" | class=="Holocephali" | class=="Actinopterygii" | class=="Chondrichthyes", TRUE, FALSE)) %>%
     select(asv,isFish,kingdom,phylum,class,order,family,genus,sintaxSpeciesID,sintaxBS)
 
 # write out formatted sintax results

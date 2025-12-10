@@ -74,6 +74,9 @@ scripts/process-blast.R
 ############## ALIGN AND RUN EPA ##############
 ############## ALIGN AND RUN EPA ##############
 
+echo "Stopping here for debugging"
+exit
+
 # prep for EPA
 scripts/prep-epa.R
 

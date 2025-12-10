@@ -13,6 +13,8 @@ option_list <- list(
 # set args
 opt <- parse_args(OptionParser(option_list=option_list,add_help_option=FALSE))
 
+# test
+opt$contam <- "assets/contaminants-exclude.csv"
 
 ############## LOAD DATA AND JOIN ##############
 ############## LOAD DATA AND JOIN ##############
@@ -20,7 +22,7 @@ opt <- parse_args(OptionParser(option_list=option_list,add_help_option=FALSE))
 # reload global blast, local blast, epa results
 fish.otus <- suppressMessages(suppressWarnings(read_csv(file=here("temp/taxonomic-assignment/sintax-table.csv"))))
 local.db.blast.sorted <- suppressMessages(suppressWarnings(read_csv(file=here("temp/taxonomic-assignment/fish-blast-result-sorted.csv"))))
-epa.results.filtered <- suppressMessages(suppressWarnings(read_csv(file=here("temp/taxonomic-assignment/epa/epa-results-filtered.csv"))))
+#epa.results.filtered <- suppressMessages(suppressWarnings(read_csv(file=here("temp/taxonomic-assignment/epa/epa-results-filtered.csv"))))
 
 # read in contamination exclusions
 contam.table <- suppressMessages(suppressWarnings(read_csv(here(opt$contam))))
@@ -30,7 +32,7 @@ dnas <- read.FASTA(file=here("temp/taxonomic-assignment/asvs-clean-cat-relabel-d
 dnas.table <- tibble(asv=names(dnas),nucleotides=mapply(paste,collapse="",as.character(dnas),USE.NAMES=FALSE)) %>% mutate(asvLength=str_length(nucleotides))
 
 # combine
-taxonomy.results <- purrr::reduce(list(fish.otus,local.db.blast.sorted,epa.results.filtered,dnas.table),left_join,by="asv") %>% rename(asvHash=asv)
+taxonomy.results <- purrr::reduce(list(fish.otus,local.db.blast.sorted,dnas.table),left_join,by="asv") %>% rename(asvHash=asv)
 
 
 ############## ASSIGN TAXONOMY ##############
@@ -42,13 +44,22 @@ minLen <- ceiling(mode_avg(pull(taxonomy.results,asvLength))*0.9)
 # two step process - either (a) or (b) must be satisfied
 # (a) epaAssign = highest likelihood EPA id and blast id the same, EPA likelihood > 0.9, and pident > 0.9
 # (b) blastAssign = the best species-level EPA id (not necesarily best overall id) and blast id the same, and pident >0.97 and lengthLocal >0.9 of modal ASV length 
-taxonomy.results %<>% 
-    mutate(epaAssign=if_else(epaID==blastSpeciesID & epaIdLWR>=0.9 & blastPident>=90,TRUE,FALSE)) %>% 
-    mutate(blastAssign=if_else(str_detect(blastSpeciesID,epaBestSppID) & blastLength>=minLen & blastPident>=97,TRUE,FALSE)) %>% 
-    mutate(assigned=if_else(epaAssign==TRUE | blastAssign==TRUE,TRUE,FALSE)) %>% 
-    mutate(assignedName=if_else(assigned==TRUE,if_else(epaAssign==TRUE,epaID,epaBestSppID),"NA")) %>%
-    mutate(assigned=if_else(isFish==FALSE,FALSE,assigned))
+#taxonomy.results %<>% 
+#    mutate(epaAssign=if_else(epaID==blastSpeciesID & epaIdLWR>=0.9 & blastPident>=90,TRUE,FALSE)) %>% 
+#    mutate(blastAssign=if_else(str_detect(blastSpeciesID,epaBestSppID) & blastLength>=minLen & blastPident>=97,TRUE,FALSE)) %>% 
+#    mutate(assigned=if_else(epaAssign==TRUE | blastAssign==TRUE,TRUE,FALSE)) %>% 
+#    mutate(assignedName=if_else(assigned==TRUE,if_else(epaAssign==TRUE,epaID,epaBestSppID),"NA")) %>%
+#    mutate(assigned=if_else(isFish==FALSE,FALSE,assigned))
 
+taxonomy.results %<>% 
+    mutate(sintaxAssignName=case_when(sintaxBS>=0.7 ~ sintaxSpeciesID)) %>%
+    mutate(blastAssignName=case_when(blastLength>=minLen & blastPident>=97 ~ sintaxSpeciesID)) %>%
+    mutate(assignedName=case_when(sintaxAssignName==blastAssignName ~ sintaxAssignName)) %>%
+    mutate(assigned=if_else(!is.na(assignedName),TRUE,FALSE))
+    # |>
+    #select(sintaxSpeciesID,sintaxBS,sintaxAssignName,blastAssignName,blastPident,blastLength,assignedName,assigned) |> 
+    #filter(assigned==FALSE & blastPident>=97) |>
+    #print(n=500)
 
 ############## ADD CONTAMINANTS ##############
 ############## ADD CONTAMINANTS ##############
@@ -129,9 +140,8 @@ fishes.by.sample %>%
 
 # write out taxonomic identifications
 taxonomy.results %>% select(asvHash,nreads,isFish,assigned,assignedName,
-    sintaxSpeciesID,sintaxBS,kingdom,phylum,class,order,family,genus,
-    blastAssign,blastSpeciesID,blastDbid,blastEvalue,blastLength,blastPident,blastNident,blastScore,blastBitscore,
-    epaAssign,epaIdLWR,epaID,epaBestSppID,epaAllSpp,
+    sintaxSpeciesID,sintaxAssignName,sintaxBS,kingdom,phylum,class,order,family,genus,
+    blastSpeciesID,blastAssignName,blastDbid,blastEvalue,blastLength,blastPident,blastNident,blastScore,blastBitscore,
     isContaminated,contaminationID,asvLength,nucleotides) %>%
     arrange(desc(isFish),desc(assigned),desc(nreads)) %>% 
     write_csv(file=here("results/taxonomic-assignments.csv"))

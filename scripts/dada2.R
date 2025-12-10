@@ -70,8 +70,10 @@ if(opt$primer=="tele02") {
     prefix <- "12s.taberlet.noprimers"
 } else if(opt$primer=="elas02" | opt$primer=="mifish-u" | opt$primer=="mifish-u-mod") {
     prefix <- "12s.miya.noprimers"
+} else if(opt$primer=="leese") {
+    prefix <- "coi.leese.noprimers"
 } else {
-    stop("Primers must be 'tele02', 'elas02', 'mifish-u', or 'mifish-u-mod'")
+    stop("Primers must be 'leese', 'tele02', 'elas02', 'mifish-u', or 'mifish-u-mod'")
 }
 
 # load reflib - first need to have run 'join-references.R' to create
@@ -97,10 +99,10 @@ writeLines("\n...\ndada2 denoising\n")
 Sys.sleep(3)
 
 # run dada denoising - takes time with pool=TRUE
-sense.filt.R1.dada <- dada(cpath("sense","filtered","R1"), err=sense.filt.R1.errs, multithread=opt$threads, pool=TRUE, priors=fish.priors)
-sense.filt.R2.dada <- dada(cpath("sense","filtered","R2"), err=sense.filt.R2.errs, multithread=opt$threads, pool=TRUE, priors=fish.priors)
-antisense.filt.R1.dada <- dada(cpath("antisense","filtered","R1"), err=antisense.filt.R1.errs, multithread=opt$threads, pool=TRUE, priors=fish.priors)
-antisense.filt.R2.dada <- dada(cpath("antisense","filtered","R2"), err=antisense.filt.R2.errs, multithread=opt$threads, pool=TRUE, priors=fish.priors)
+sense.filt.R1.dada <- dada(cpath("sense","filtered","R1"), err=sense.filt.R1.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors)
+sense.filt.R2.dada <- dada(cpath("sense","filtered","R2"), err=sense.filt.R2.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors)
+antisense.filt.R1.dada <- dada(cpath("antisense","filtered","R1"), err=antisense.filt.R1.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors)
+antisense.filt.R2.dada <- dada(cpath("antisense","filtered","R2"), err=antisense.filt.R2.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors)
 
 
 ############## DEREPLICATE ##############
@@ -188,8 +190,10 @@ if(opt$primer=="tele02") {
     hmm <- here("assets/12s.taberlet.noprimers.hmm")
 } else if(opt$primer=="elas02" | opt$primer=="mifish-u" | opt$primer=="mifish-u-mod") {
     hmm <- here("assets/12s.miya.noprimers.hmm")
+} else if(opt$primer=="leese") {
+    hmm <- here("assets/coi.leese.noprimers.hmm")
 } else {
-    stop("Primers must be 'tele02', 'elas02', 'mifish-u', or 'mifish-u-mod'")
+    stop("Primers must be 'leese', 'tele02', 'elas02', 'mifish-u', or 'mifish-u-mod'")
 }
 
 # set vars
