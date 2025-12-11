@@ -91,20 +91,6 @@ reflib.sub <- subset_by_marker(prefix=prefix,df=reflib,thresh=0.625) %>%
 fish.priors <- unique(c(pull(reflib.sub,fwd),pull(reflib.sub,revcomp)))
 
 
-############## DENOISE ##############
-############## DENOISE ##############
-
-# report
-writeLines("\n...\ndada2 denoising\n")
-Sys.sleep(3)
-
-# run dada denoising - takes time with pool=TRUE
-sense.filt.R1.dada <- dada(cpath("sense","filtered","R1"), err=sense.filt.R1.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors, qualityType="FastqQuality")
-sense.filt.R2.dada <- dada(cpath("sense","filtered","R2"), err=sense.filt.R2.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors, qualityType="FastqQuality")
-antisense.filt.R1.dada <- dada(cpath("antisense","filtered","R1"), err=antisense.filt.R1.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors, qualityType="FastqQuality")
-antisense.filt.R2.dada <- dada(cpath("antisense","filtered","R2"), err=antisense.filt.R2.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors, qualityType="FastqQuality")
-
-
 ############## DEREPLICATE ##############
 ############## DEREPLICATE ##############
 
@@ -113,10 +99,24 @@ writeLines("\n...\nDereplication\n")
 Sys.sleep(3)
 
 # derep
-sense.filt.R1.derep <- derepFastq(cpath("sense","filtered","R1"))
-sense.filt.R2.derep <- derepFastq(cpath("sense","filtered","R2"))
-antisense.filt.R1.derep <- derepFastq(cpath("antisense","filtered","R1"))
-antisense.filt.R2.derep <- derepFastq(cpath("antisense","filtered","R2"))
+sense.filt.R1.derep <- derepFastq(cpath("sense","filtered","R1"), qualityType="FastqQuality")
+sense.filt.R2.derep <- derepFastq(cpath("sense","filtered","R2"), qualityType="FastqQuality")
+antisense.filt.R1.derep <- derepFastq(cpath("antisense","filtered","R1"), qualityType="FastqQuality")
+antisense.filt.R2.derep <- derepFastq(cpath("antisense","filtered","R2"), qualityType="FastqQuality")
+
+
+############## DENOISE ##############
+############## DENOISE ##############
+
+# report
+writeLines("\n...\ndada2 denoising\n")
+Sys.sleep(3)
+
+# run dada denoising - takes time with pool=TRUE
+sense.filt.R1.dada <- dada(sense.filt.R1.derep, err=sense.filt.R1.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors)
+sense.filt.R2.dada <- dada(sense.filt.R2.derep, err=sense.filt.R2.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors)
+antisense.filt.R1.dada <- dada(antisense.filt.R1.derep, err=antisense.filt.R1.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors)
+antisense.filt.R2.dada <- dada(antisense.filt.R2.derep, err=antisense.filt.R2.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors)
 
 
 ############## MERGE ##############
