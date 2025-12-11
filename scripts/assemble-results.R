@@ -49,6 +49,12 @@ taxonomy.results %<>%
     mutate(assignedName=if_else(assigned==TRUE,if_else(epaAssign==TRUE,epaID,epaBestSppID),"NA")) %>%
     mutate(assigned=if_else(isFish==FALSE,FALSE,assigned))
 
+# to assign other verts with sintax results
+taxonomy.results %<>%
+    dplyr::mutate(assigned=dplyr::if_else(isFish==FALSE & assigned==FALSE & sintaxBS>=0.95 & nreads>100,TRUE,assigned)) %>%
+    dplyr::mutate(assignedName=dplyr::if_else(isFish==FALSE & assigned==TRUE & sintaxBS>=0.95 & nreads>100,sintaxSpeciesID,assignedName)) %>%
+    dplyr::mutate(isFish=dplyr::if_else(isFish==FALSE & assigned==TRUE & sintaxBS>=0.95 & nreads>100,TRUE,isFish))
+ 
 
 ############## ADD CONTAMINANTS ##############
 ############## ADD CONTAMINANTS ##############
