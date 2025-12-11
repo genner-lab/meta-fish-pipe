@@ -99,10 +99,10 @@ writeLines("\n...\ndada2 denoising\n")
 Sys.sleep(3)
 
 # run dada denoising - takes time with pool=TRUE
-sense.filt.R1.dada <- dada(cpath("sense","filtered","R1"), err=sense.filt.R1.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors)
-sense.filt.R2.dada <- dada(cpath("sense","filtered","R2"), err=sense.filt.R2.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors)
-antisense.filt.R1.dada <- dada(cpath("antisense","filtered","R1"), err=antisense.filt.R1.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors)
-antisense.filt.R2.dada <- dada(cpath("antisense","filtered","R2"), err=antisense.filt.R2.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors)
+sense.filt.R1.dada <- dada(cpath("sense","filtered","R1"), err=sense.filt.R1.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors, qualityType="FastqQuality")
+sense.filt.R2.dada <- dada(cpath("sense","filtered","R2"), err=sense.filt.R2.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors, qualityType="FastqQuality")
+antisense.filt.R1.dada <- dada(cpath("antisense","filtered","R1"), err=antisense.filt.R1.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors, qualityType="FastqQuality")
+antisense.filt.R2.dada <- dada(cpath("antisense","filtered","R2"), err=antisense.filt.R2.errs, multithread=opt$threads, pool=FALSE, priors=fish.priors, qualityType="FastqQuality")
 
 
 ############## DEREPLICATE ##############
