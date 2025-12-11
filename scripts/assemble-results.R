@@ -51,9 +51,9 @@ taxonomy.results %<>%
 
 # to assign other verts with sintax results
 taxonomy.results %<>%
-    dplyr::mutate(assigned=dplyr::if_else(isFish==FALSE & assigned==FALSE & sintaxBS>=0.95 & nreads>100,TRUE,assigned)) %>%
-    dplyr::mutate(assignedName=dplyr::if_else(isFish==FALSE & assigned==TRUE & sintaxBS>=0.95 & nreads>100,sintaxSpeciesID,assignedName)) %>%
-    dplyr::mutate(isFish=dplyr::if_else(isFish==FALSE & assigned==TRUE & sintaxBS>=0.95 & nreads>100,TRUE,isFish))
+    dplyr::mutate(assigned=dplyr::if_else(isFish==FALSE & assigned==FALSE & sintaxBS>=0.95,TRUE,assigned)) %>%
+    dplyr::mutate(assignedName=dplyr::if_else(isFish==FALSE & assigned==TRUE & sintaxBS>=0.95,sintaxSpeciesID,assignedName)) %>%
+    dplyr::mutate(isFish=dplyr::if_else(isFish==FALSE & assigned==TRUE & sintaxBS>=0.95,TRUE,isFish))
  
 
 ############## ADD CONTAMINANTS ##############
